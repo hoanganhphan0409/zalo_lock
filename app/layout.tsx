@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import "@/styles/global.css";
 
 
 export const metadata: Metadata = {
-  title: "Map-X",
-  description: "Map-X travels networks",
+  title: "Zalo Lock",
+  description: "Zalo logging message",
 };
 
 export default function RootLayout({

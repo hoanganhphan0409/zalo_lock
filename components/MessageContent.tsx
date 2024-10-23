@@ -2,11 +2,21 @@
 import React, { useEffect, useRef } from 'react';
 import Avatar from "@/components/Avatar";
 
-interface MessageContentProps {
-  messages: { groupChatId: number; content: string; isSelf: boolean; sendAt: string }[]; // Định nghĩa kiểu cho messages
+interface Conversation {
+  groupChatName: string;
+  lastTimeMessage: string;
+  lastMessage: string;
+  groupAvtUrl: string;
+  groupChatId: string;
+  isPrivate: boolean;
 }
 
-const MessageContent: React.FC<MessageContentProps> = ({ messages }) => {
+interface MessageContentProps {
+  messages: { groupChatId: number; content: string; isSelf: boolean; sendAt: string; senderAvtUrl: string; senderName: string }[];
+  userInfo: Conversation;
+}
+
+const MessageContent: React.FC<MessageContentProps> = ({ messages, userInfo }) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -21,14 +31,13 @@ const MessageContent: React.FC<MessageContentProps> = ({ messages }) => {
       <div className="relative flex items-center space-x-3 border-b-2 pl-3 pb-3 pt-3">
         <Avatar
           isOnline={false}
-          imageUrl="/images/avatarEx.png"
+          imageUrl={userInfo.groupAvtUrl}
           width={50}
           height={50}
-          userName="User profile image"
+          userName={userInfo.groupChatName}
         />
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">Phạm Anh Dũng</h1>
-          <span className="text-sm text-gray-500">Đang hoạt động</span>
+          <h1 className="text-xl font-semibold">{userInfo.groupChatName}</h1>
         </div>
       </div>
 
@@ -37,24 +46,30 @@ const MessageContent: React.FC<MessageContentProps> = ({ messages }) => {
         {messages.map((message) => (
           <div
             key={message.groupChatId}
-            className={`flex items-center mb-3 ${message.isSelf === true ? "justify-end" : "justify-start"}`}
+            className={`flex items-center mb-3 ${message.isSelf ? "justify-end" : "justify-start"}`}
           >
-            {message.isSelf === false && (
-              <div className="flex items-center space-x-3">
-                <Avatar
-                  isOnline={false}
-                  imageUrl="/images/avatarEx.png"
-                  width={40}
-                  height={40}
-                  userName="User profile image"
-                />
-                <div className="max-w-xs p-3 rounded-lg bg-white text-black">
-                  <p>{message.content}</p>
-                  <span className="text-xs text-gray-500 mt-1">{message.sendAt}</span>
+            {!message.isSelf && (
+              <div className="flex flex-col items-start space-y-1">
+                {/* Chỉ hiển thị tên người gửi nếu isPrivate = false */}
+                {!userInfo.isPrivate && (
+                  <span className="text-xs text-green-600">{message.senderName}</span>
+                )}
+                <div className="flex items-center space-x-3">
+                  <Avatar
+                    isOnline={false}
+                    imageUrl={message.senderAvtUrl}
+                    width={40}
+                    height={40}
+                    userName={message.senderName}
+                  />
+                  <div className="max-w-xs p-3 rounded-lg bg-white text-black">
+                    <p>{message.content}</p>
+                    <span className="text-xs text-gray-500 mt-1">{message.sendAt}</span>
+                  </div>
                 </div>
               </div>
             )}
-            {message.isSelf === true && (
+            {message.isSelf && (
               <div className="flex items-center space-x-3">
                 <div className="max-w-xs p-3 rounded-lg bg-blue-200 text-black">
                   <p>{message.content}</p>

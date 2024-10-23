@@ -1,29 +1,19 @@
-"use client"
+"use client";
 import React, { useEffect, useRef } from 'react';
 import Avatar from "@/components/Avatar";
 
-// Giả sử bạn có một mảng chứa các tin nhắn
-const messages = [
-  { id: 1, content: "Xin chào, Dũng!", sender: "other", time: "10:05 AM" },
-  { id: 2, content: "Chào bạn!", sender: "me", time: "10:06 AM" },
-  { id: 3, content: "Bạn đang làm gì đó?", sender: "other", time: "10:07 AM" },
-  { id: 4, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 5, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 6, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 7, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 8, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 9, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 10, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-  { id: 11, content: "Mình đang học React!", sender: "me", time: "10:08 AM" },
-];
+interface MessageContentProps {
+  messages: { groupChatId: number; content: string; isSelf: boolean; sendAt: string }[]; // Định nghĩa kiểu cho messages
+}
 
-const MessageContent = () => {
+const MessageContent: React.FC<MessageContentProps> = ({ messages }) => {
   const bottomRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     if (bottomRef.current) {
       bottomRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [messages]); 
+  }, [messages]);
 
   return (
     <div className="flex flex-col w-full h-screen">
@@ -46,12 +36,10 @@ const MessageContent = () => {
       <div className="flex flex-col bg-gray-100 w-full h-full overflow-y-auto p-3">
         {messages.map((message) => (
           <div
-            key={message.id}
-            className={`flex items-center mb-3 ${
-              message.sender === "me" ? "justify-end" : "justify-start"
-            }`}
+            key={message.groupChatId}
+            className={`flex items-center mb-3 ${message.isSelf === true ? "justify-end" : "justify-start"}`}
           >
-            {message.sender === "other" && (
+            {message.isSelf === false && (
               <div className="flex items-center space-x-3">
                 <Avatar
                   isOnline={false}
@@ -62,19 +50,15 @@ const MessageContent = () => {
                 />
                 <div className="max-w-xs p-3 rounded-lg bg-white text-black">
                   <p>{message.content}</p>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {message.time}
-                  </span>
+                  <span className="text-xs text-gray-500 mt-1">{message.sendAt}</span>
                 </div>
               </div>
             )}
-            {message.sender === "me" && (
+            {message.isSelf === true && (
               <div className="flex items-center space-x-3">
                 <div className="max-w-xs p-3 rounded-lg bg-blue-200 text-black">
                   <p>{message.content}</p>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {message.time}
-                  </span>
+                  <span className="text-xs text-gray-500 mt-1">{message.sendAt}</span>
                 </div>
               </div>
             )}

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ChevronDown, Ellipsis } from "lucide-react";
 import UserCard from "@/components/UserCard";
 import { formatDistanceToNow } from "date-fns";
+
 // Khai báo kiểu dữ liệu cho người dùng
 interface Conversation {
   groupChatName: string;
@@ -14,8 +15,11 @@ interface Conversation {
   groupChatId: string;
 }
 
-const MessageControl: React.FC = () => {
-  // Sử dụng kiểu `User[]` cho state `users`
+interface MessageControlProps {
+  setMessages: React.Dispatch<React.SetStateAction<any[]>>;
+}
+
+const MessageControl: React.FC<MessageControlProps> = ({ setMessages }) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
 
   // Hàm gọi API để lấy danh sách người dùng
@@ -32,17 +36,17 @@ const MessageControl: React.FC = () => {
 
     fetchUsers();
   }, []);
+
   const handleOpenMessageBox = async (id: string): Promise<void> => {
     const fetchMessageBox = async (groupId: string) => {
       try {
         const response = await fetch(`http://localhost:8081/messages/${groupId}`);
-
         if (!response.ok) {
           throw new Error("Không thể lấy tin nhắn");
         }
         const data = await response.json();
         console.log("Tin nhắn:", data);
-        return data; // Trả về dữ liệu nếu cần
+        setMessages(data); // Cập nhật state tin nhắn
       } catch (error) {
         console.error("Lỗi khi lấy tin nhắn:", error);
       }

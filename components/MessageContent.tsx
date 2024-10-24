@@ -18,7 +18,7 @@ interface Message {
   cardData?: any;
   videoData?: any;
   isSelf: boolean;
-  sendAt: string;
+  sentAt: string;
   senderAvtUrl: string;
   senderName: string;
   type: string; // Thêm type để kiểm tra loại tin nhắn
@@ -52,14 +52,45 @@ const MessageContent: React.FC<MessageContentProps> = ({
   }, [messages]);
 
   const renderMessageContent = (message: Message) => {
+    const messageDate = new Date(message.sentAt);
+    const today = new Date();
+
+    let formattedTime;
+
+    // Kiểm tra xem tin nhắn có phải trong ngày hôm nay không
+    if (
+      messageDate.getDate() === today.getDate() &&
+      messageDate.getMonth() === today.getMonth() &&
+      messageDate.getFullYear() === today.getFullYear()
+    ) {
+      // Hiển thị giờ và phút
+      formattedTime = messageDate.toLocaleTimeString([], {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } else {
+      // Hiển thị ngày và giờ
+      formattedTime = messageDate.toLocaleString([], {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    }
     switch (message.type) {
       case "chat.sticker":
         return (
-          <img
-            src={message.attachmentUrl}
-            alt="Sticker"
-            className="w-25 h-25 bg-none"
-          />
+          <div>
+            <img
+              src={message.attachmentUrl}
+              alt="Sticker"
+              className="w-25 h-25 bg-none"
+            />
+            <span className="p-2 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
+          </div>
         );
       case "chat.photo":
         return (
@@ -76,23 +107,36 @@ const MessageContent: React.FC<MessageContentProps> = ({
               <source src={message.videoData?.href} type="video/mp4" />
               Your browser does not support the video element.
             </video>
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
           </div>
         );
       case "chat.gif":
         return (
-          <img
-            src={message.attachmentUrl}
-            alt="GIF"
-            className="max-w-xs bg-none "
-          />
+          <div>
+            <img
+              src={message.attachmentUrl}
+              alt="GIF"
+              className="max-w-xs bg-none "
+            />
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
+          </div>
         );
       case "chat.doodle":
         return (
-          <img
-            src={message.attachmentUrl}
-            alt="Doodle"
-            className="max-w-xs  bg-white"
-          />
+          <div>
+            <img
+              src={message.attachmentUrl}
+              alt="Doodle"
+              className="max-w-xs  bg-white"
+            />
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
+          </div>
         );
       case "chat.voice":
         return (
@@ -101,54 +145,67 @@ const MessageContent: React.FC<MessageContentProps> = ({
               <source src={message.attachmentUrl} type="audio/amr" />
               Your browser does not support the audio element.
             </audio>
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
           </div>
         );
       case "chat.recommended":
         const cardData = JSON.parse(message.cardData.description); // Phân tích JSON từ description
         return (
-          <div className="flex flex-row w-full bg-blue-500 text-white rounded-lg p-2 gap-5 items-start">
-            <div className="w-[70%] flex flex-row gap-2 mt-[10px]">
-              <Avatar
-                height={50}
-                width={50}
-                imageUrl={message.cardData.thumb}
-                isOnline={false}
-                userName={message.cardData.title}
-              />
-              <div className="flex flex-col justify-start">
-                <h2 className="text-lg font-semibold">
-                  {message.cardData.title}
-                </h2>
-                <p className="text-md mb-2 text-start">{cardData.phone}</p>
+          <div className="w-[100%]">
+            <div className="flex flex-row w-full bg-blue-500 text-white rounded-lg p-2 gap-5 items-start">
+              <div className="w-[70%] flex flex-row gap-2 mt-[10px]">
+                <Avatar
+                  height={50}
+                  width={50}
+                  imageUrl={message.cardData.thumb}
+                  isOnline={false}
+                  userName={message.cardData.title}
+                />
+                <div className="flex flex-col justify-start">
+                  <h2 className="text-lg font-semibold">
+                    {message.cardData.title}
+                  </h2>
+                  <p className="text-md mb-2 text-start">{cardData.phone}</p>
+                </div>
               </div>
-            </div>
 
-            {/* QR code (assuming you have a way to generate or obtain the URL) */}
-            {cardData.qrCodeUrl && (
-              <img
-                src={cardData.qrCodeUrl}
-                alt="QR Code"
-                className="w-28 h-28 mt-4" // Adjust size as needed
-              />
-            )}
+              {/* QR code (assuming you have a way to generate or obtain the URL) */}
+              {cardData.qrCodeUrl && (
+                <img
+                  src={cardData.qrCodeUrl}
+                  alt="QR Code"
+                  className="w-28 h-28 mt-4" // Adjust size as needed
+                />
+              )}
+            </div>
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
           </div>
         );
       case "share.file":
         const fileParams = JSON.parse(message.fileData.params); // Parse params để lấy thông tin file
         return (
-          <div className="p-3 bg-gray-100 rounded-lg border border-gray-300">
-            <h3 className="font-semibold">{message.fileData.title}</h3>
-            <p className="text-sm text-gray-500">
-              Size: {formatFileSize(fileParams.fileSize)}
-            </p>
-            <a
-              href={message.fileData.href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              Download file
-            </a>
+          <div>
+            <div className="p-3 bg-gray-100 rounded-lg border border-gray-300">
+              <h3 className="font-semibold">{message.fileData.title}</h3>
+              <p className="text-sm text-gray-500">
+                Size: {formatFileSize(fileParams.fileSize)}
+              </p>
+              <a
+                href={message.fileData.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-600 underline"
+              >
+                Download file
+              </a>
+            </div>
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
           </div>
         );
       case "chat.location.new":
@@ -174,11 +231,19 @@ const MessageContent: React.FC<MessageContentProps> = ({
               loading="lazy"
               className="rounded-lg mt-2"
             />
+            <span className="p-1 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
           </div>
         );
 
       default: // Mặc định hiển thị tin nhắn dạng text
-        return <p>{message.content}</p>;
+        return (
+          <div className="p-1">
+            <p>{message.content}</p>
+            <span className="text-xs text-gray-500 mt-1">{formattedTime}</span>
+          </div>
+        );
     }
   };
 
@@ -225,9 +290,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
                   />
                   <div className="max-w-md p-3 rounded-lg bg-white text-black">
                     {renderMessageContent(message)}
-                    <span className="text-xs text-gray-500 mt-1">
-                      {message.sendAt}
-                    </span>
                   </div>
                 </div>
               </div>
@@ -236,9 +298,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
               <div className="flex items-center space-x-3">
                 <div className="max-w-md p-[6px] rounded-lg bg-blue-200 text-black">
                   {renderMessageContent(message)}
-                  <span className="text-xs text-gray-500 mt-1">
-                    {message.sendAt}
-                  </span>
                 </div>
               </div>
             )}

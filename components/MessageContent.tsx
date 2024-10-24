@@ -23,6 +23,7 @@ interface Message {
   senderName: string;
   type: string; // Thêm type để kiểm tra loại tin nhắn
   fileData?: any;
+  locationData: any;
 }
 
 interface MessageContentProps {
@@ -33,10 +34,10 @@ interface MessageContentProps {
 const formatFileSize = (sizeInBytes: number): string => {
   if (sizeInBytes < 1024) return `${sizeInBytes} B`;
   if (sizeInBytes < 1024 * 1024) return `${(sizeInBytes / 1024).toFixed(2)} KB`;
-  if (sizeInBytes < 1024 * 1024 * 1024) return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+  if (sizeInBytes < 1024 * 1024 * 1024)
+    return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
   return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 };
-
 
 const MessageContent: React.FC<MessageContentProps> = ({
   messages,
@@ -150,6 +151,32 @@ const MessageContent: React.FC<MessageContentProps> = ({
             </a>
           </div>
         );
+      case "chat.location.new":
+        const locationParams = JSON.parse(message.locationData.params); // Parse params để lấy thông tin vị trí
+        const { latitude, longitude } = locationParams;
+
+        // URL cho Google Maps với tọa độ từ dữ liệu
+        const googleMapsUrl = `https://www.google.com/maps?q=${latitude},${longitude}&z=15&output=embed`;
+
+        return (
+          <div className="p-3 bg-gray-100 rounded-lg border border-gray-300">
+            <h3 className="font-semibold">{message.locationData.title}</h3>
+            <p className="text-sm text-black">
+              {message.locationData.description}
+            </p>
+            <iframe
+              title="Google Maps"
+              src={googleMapsUrl}
+              width="100%"
+              height="200px"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              className="rounded-lg mt-2"
+            />
+          </div>
+        );
+
       default: // Mặc định hiển thị tin nhắn dạng text
         return <p>{message.content}</p>;
     }

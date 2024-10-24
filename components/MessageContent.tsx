@@ -41,8 +41,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
   }, [messages]);
 
   const renderMessageContent = (message: Message) => {
-    console.log("wtf" + message.type);
-
     switch (message.type) {
       case "chat.sticker":
         return (
@@ -78,30 +76,41 @@ const MessageContent: React.FC<MessageContentProps> = ({
         );
       case "chat.voice":
         return (
-          <audio controls>
-            <source src={message.attachmentUrl} type="audio/mpeg" />
-            Your browser does not support the audio element.
-          </audio>
+          <div>
+            <audio controls>
+              <source src={message.attachmentUrl} type="audio/amr" />
+              Your browser does not support the audio element.
+            </audio>
+          </div>
         );
       case "chat.recommended":
         const cardData = JSON.parse(message.cardData.description); // Phân tích JSON từ description
         return (
-          <div className="bg-gray-200 p-3 rounded-lg">
-            {/* Hiển thị thông tin card từ message.cardData */}
-            <p className="font-semibold">{message.cardData.title}</p>
-            <img
-              src={message.cardData.thumb}
-              alt={message.cardData.title}
-              className="w-full h-auto rounded"
-            />
-            <p>Phone: {cardData.phone}</p>
+          <div className="flex flex-row w-full bg-blue-500 text-white rounded-lg p-2 gap-5 items-start">
+            <div className="w-[70%] flex flex-row gap-2 mt-[10px]">
+              <Avatar
+                height={50}
+                width={50}
+                imageUrl={message.cardData.thumb}
+                isOnline={false}
+                userName={message.cardData.title}
+              />
+              <div className="flex flex-col justify-start">
+                <h2 className="text-lg font-semibold">
+                  {message.cardData.title}
+                </h2>
+                <p className="text-md mb-2 text-start">{cardData.phone}</p>
+              </div>
+            </div>
 
-            {/* Hiển thị QR code */}
-            <img
-              src={cardData.qrCodeUrl}
-              alt="QR Code"
-              className="w-32 h-32 mt-2" // Bạn có thể điều chỉnh kích thước tùy ý
-            />
+            {/* QR code (assuming you have a way to generate or obtain the URL) */}
+            {cardData.qrCodeUrl && (
+              <img
+                src={cardData.qrCodeUrl}
+                alt="QR Code"
+                className="w-28 h-28 mt-4" // Adjust size as needed
+              />
+            )}
           </div>
         );
 
@@ -162,7 +171,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             )}
             {message.isSelf && (
               <div className="flex items-center space-x-3">
-                <div className="max-w-md p-3 rounded-lg bg-blue-200 text-black">
+                <div className="max-w-md p-[6px] rounded-lg bg-blue-200 text-black">
                   {renderMessageContent(message)}
                   <span className="text-xs text-gray-500 mt-1">
                     {message.sendAt}

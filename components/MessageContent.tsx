@@ -22,12 +22,21 @@ interface Message {
   senderAvtUrl: string;
   senderName: string;
   type: string; // Thêm type để kiểm tra loại tin nhắn
+  fileData?: any;
 }
 
 interface MessageContentProps {
   messages: Message[];
   userInfo: Conversation;
 }
+
+const formatFileSize = (sizeInBytes: number): string => {
+  if (sizeInBytes < 1024) return `${sizeInBytes} B`;
+  if (sizeInBytes < 1024 * 1024) return `${(sizeInBytes / 1024).toFixed(2)} KB`;
+  if (sizeInBytes < 1024 * 1024 * 1024) return `${(sizeInBytes / (1024 * 1024)).toFixed(2)} MB`;
+  return `${(sizeInBytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+};
+
 
 const MessageContent: React.FC<MessageContentProps> = ({
   messages,
@@ -123,7 +132,24 @@ const MessageContent: React.FC<MessageContentProps> = ({
             )}
           </div>
         );
-
+      case "share.file":
+        const fileParams = JSON.parse(message.fileData.params); // Parse params để lấy thông tin file
+        return (
+          <div className="p-3 bg-gray-100 rounded-lg border border-gray-300">
+            <h3 className="font-semibold">{message.fileData.title}</h3>
+            <p className="text-sm text-gray-500">
+              Size: {formatFileSize(fileParams.fileSize)}
+            </p>
+            <a
+              href={message.fileData.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-600 underline"
+            >
+              Download file
+            </a>
+          </div>
+        );
       default: // Mặc định hiển thị tin nhắn dạng text
         return <p>{message.content}</p>;
     }

@@ -16,6 +16,7 @@ interface Message {
   content?: string;
   attachmentUrl?: string;
   cardData?: any;
+  videoData?: any;
   isSelf: boolean;
   sendAt: string;
   senderAvtUrl: string;
@@ -57,6 +58,15 @@ const MessageContent: React.FC<MessageContentProps> = ({
             alt="Photo"
             className="max-w-xs bg-none"
           />
+        );
+      case "chat.video.msg":
+        return (
+          <div className="max-w-xs bg-none">
+            <video controls className="max-w-full">
+              <source src={message.videoData?.href} type="video/mp4" />
+              Your browser does not support the video element.
+            </video>
+          </div>
         );
       case "chat.gif":
         return (

@@ -99,11 +99,16 @@ const MessageContent: React.FC<MessageContentProps> = ({
         );
       case "chat.photo":
         return (
-          <img
-            src={message.attachmentUrl}
-            alt="Photo"
-            className="max-w-xs bg-none"
-          />
+          <div>
+            <img
+              src={message.attachmentUrl}
+              alt="Photo"
+              className="max-w-xs bg-none"
+            />
+            <span className="p-2 text-xs text-gray-500 mt-1">
+              {formattedTime}
+            </span>
+          </div>
         );
       case "chat.video.msg":
         return (

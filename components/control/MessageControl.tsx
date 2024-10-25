@@ -21,10 +21,13 @@ interface Conversation {
 
 interface MessageControlProps {
   setMessages: React.Dispatch<React.SetStateAction<any[]>>;
-  setSelectedUser: React.Dispatch<React.SetStateAction<Conversation>>; 
+  setSelectedUser: React.Dispatch<React.SetStateAction<Conversation>>;
 }
 
-const MessageControl: React.FC<MessageControlProps> = ({ setMessages, setSelectedUser }) => {
+const MessageControl: React.FC<MessageControlProps> = ({
+  setMessages,
+  setSelectedUser,
+}) => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentGroupChatId, setCurrentGroupChatId] = useState<string>();
   useEffect(() => {
@@ -44,12 +47,14 @@ const MessageControl: React.FC<MessageControlProps> = ({ setMessages, setSelecte
   useEffect(() => {
     const fetchMessages = async (groupId: string) => {
       try {
-        const response = await fetch(`http://localhost:8081/messages/${groupId}`);
+        const response = await fetch(
+          `http://localhost:8081/messages/${groupId}`
+        );
         if (!response.ok) {
           throw new Error("Không thể lấy tin nhắn");
         }
-        const data = await response.json();        
-        setMessages(data); 
+        const data = await response.json();
+        setMessages(data);
       } catch (error) {
         console.error("Lỗi khi lấy tin nhắn:", error);
       }
@@ -66,22 +71,27 @@ const MessageControl: React.FC<MessageControlProps> = ({ setMessages, setSelecte
     };
 
     socket.on("newMessage", (data) => {
-        fetchUsers();
-        if (data.groupChatId === currentGroupChatId) {
-          setMessages([]);
-        fetchMessages(data.groupChatId); 
-        }
+      fetchUsers();
+      if (data.groupChatId === currentGroupChatId) {
+        setMessages([]);
+        fetchMessages(data.groupChatId);
+      }
     });
 
     return () => {
       socket.off("newMessage");
     };
   });
-  const handleOpenMessageBox = async (id: string, conversation: Conversation): Promise<void> => {
-    setMessages([]); 
+  const handleOpenMessageBox = async (
+    id: string,
+    conversation: Conversation
+  ): Promise<void> => {
+    setMessages([]);
     const fetchMessageBox = async (groupId: string) => {
       try {
-        const response = await fetch(`http://localhost:8081/messages/${groupId}`);
+        const response = await fetch(
+          `http://localhost:8081/messages/${groupId}`
+        );
         if (!response.ok) {
           throw new Error("Không thể lấy tin nhắn");
         }
@@ -92,8 +102,8 @@ const MessageControl: React.FC<MessageControlProps> = ({ setMessages, setSelecte
       }
     };
 
-    setSelectedUser(conversation); 
-    setCurrentGroupChatId(id)
+    setSelectedUser(conversation);
+    setCurrentGroupChatId(id);
     await fetchMessageBox(id);
   };
 
@@ -101,19 +111,17 @@ const MessageControl: React.FC<MessageControlProps> = ({ setMessages, setSelecte
     <div className="flex-cols border-[1px] border-t-0 h-screen">
       <div className="flex flex-col w-full overflow-auto scrollbar justify-start">
         {conversations.map((conversation, index) => {
-          const lastTimeRelative = formatDistanceToNow(
-            new Date(conversation.lastTimeMessage),
-            { addSuffix: true }
-          );
-
+          
           return (
             <UserCard
-              handleOpenMessageBox={() => handleOpenMessageBox(conversation.groupChatId, conversation)} // Truyền thêm conversation
+              handleOpenMessageBox={() =>
+                handleOpenMessageBox(conversation.groupChatId, conversation)
+              } // Truyền thêm conversation
               key={conversation.groupChatId + "-" + index}
               groupChatId={conversation.groupChatId}
               userName={conversation.groupChatName}
               lastMessage={conversation.lastMessage}
-              lastTimeMessage={lastTimeRelative}
+              lastTimeMessage={conversation.lastTimeMessage}
               imageUrl={conversation.groupAvtUrl}
             />
           );

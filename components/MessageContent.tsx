@@ -107,7 +107,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             />
             <span className="p-2 text-xs text-gray-500 mt-1">
               {formattedTime}
-            </span>
+            </span> 
           </div>
         );
       case "chat.video.msg":
@@ -290,14 +290,13 @@ const MessageContent: React.FC<MessageContentProps> = ({
               }`}
             >
               {!message.isSelf && (
-                <div className="flex flex-col items-start space-y-1">
-                  {/* Chỉ hiển thị tên người gửi nếu isPrivate = false */}
+                <div className="flex flex-col items-start justify-start space-y-1">
                   {!userInfo.isPrivate && (
                     <span className="text-xs text-green-600">
                       {message.senderName}
                     </span>
                   )}
-                  <div className="flex items-center space-x-3">
+                  <div className="flex items-start space-x-3">
                     <Avatar
                       isOnline={false}
                       imageUrl={message.senderAvtUrl}

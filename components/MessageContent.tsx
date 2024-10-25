@@ -52,7 +52,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
       }
     };
     scrollToBottom();
-    const timeout = setTimeout(scrollToBottom, 200); // Đặt thời gian chờ bằng 0
+    const timeout = setTimeout(scrollToBottom, 300); // Đặt thời gian chờ bằng 0
     return () => clearTimeout(timeout);
   }, [messages]); // Mỗi khi messages thay đổi, sẽ cuộn đến cuối
 
@@ -304,7 +304,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
                       height={40}
                       userName={message.senderName}
                     />
-                    <div className="max-w-md p-3 rounded-lg bg-white text-black">
+                    <div className="max-w-md p-[8px] rounded-lg bg-white text-black">
                       {renderMessageContent(message)}
                     </div>
                   </div>
@@ -312,7 +312,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
               )}
               {message.isSelf && (
                 <div className="flex items-center space-x-3">
-                  <div className="max-w-md p-[6px] rounded-lg bg-blue-200 text-black">
+                  <div className="max-w-md p-[8px] rounded-lg bg-blue-200 text-black">
                     {renderMessageContent(message)}
                   </div>
                 </div>

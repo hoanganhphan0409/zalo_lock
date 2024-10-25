@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 
 interface Conversation {
@@ -43,13 +43,18 @@ const MessageContent: React.FC<MessageContentProps> = ({
   messages,
   userInfo,
 }) => {
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const messageList = useRef<HTMLDivElement | null>();
 
-  useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+  useLayoutEffect(() => {
+    const scrollToBottom = () => {
+      if (messageList.current) {
+        messageList.current.scrollTop = messageList.current.scrollHeight;
+      }
+    };
+    scrollToBottom();
+    const timeout = setTimeout(scrollToBottom, 200); // Đặt thời gian chờ bằng 0
+    return () => clearTimeout(timeout);
+  }, [messages]); // Mỗi khi messages thay đổi, sẽ cuộn đến cuối
 
   const renderMessageContent = (message: Message) => {
     const messageDate = new Date(message.sentAt);
@@ -264,47 +269,54 @@ const MessageContent: React.FC<MessageContentProps> = ({
       </div>
 
       {/* Message list */}
-      <div className="flex flex-col bg-gray-100 w-full h-full overflow-y-auto p-3">
-        {messages.map((message) => (
-          <div
-            key={message.groupChatId}
-            className={`flex items-center mb-3 ${
-              message.isSelf ? "justify-end" : "justify-start"
-            }`}
-          >
-            {!message.isSelf && (
-              <div className="flex flex-col items-start space-y-1">
-                {/* Chỉ hiển thị tên người gửi nếu isPrivate = false */}
-                {!userInfo.isPrivate && (
-                  <span className="text-xs text-green-600">
-                    {message.senderName}
-                  </span>
-                )}
+      <div
+        className="flex flex-col bg-gray-100 w-full h-full overflow-y-auto p-3"
+        ref={messageList}
+      >
+        {messages.map((message, index) => {
+          if (index === messages.length - 1) {
+            console.log("DONE");
+          }
+          return (
+            <div
+              key={message.groupChatId}
+              className={`flex items-center mb-3 ${
+                message.isSelf ? "justify-end" : "justify-start"
+              }`}
+            >
+              {!message.isSelf && (
+                <div className="flex flex-col items-start space-y-1">
+                  {/* Chỉ hiển thị tên người gửi nếu isPrivate = false */}
+                  {!userInfo.isPrivate && (
+                    <span className="text-xs text-green-600">
+                      {message.senderName}
+                    </span>
+                  )}
+                  <div className="flex items-center space-x-3">
+                    <Avatar
+                      isOnline={false}
+                      imageUrl={message.senderAvtUrl}
+                      width={40}
+                      height={40}
+                      userName={message.senderName}
+                    />
+                    <div className="max-w-md p-3 rounded-lg bg-white text-black">
+                      {renderMessageContent(message)}
+                    </div>
+                  </div>
+                </div>
+              )}
+              {message.isSelf && (
                 <div className="flex items-center space-x-3">
-                  <Avatar
-                    isOnline={false}
-                    imageUrl={message.senderAvtUrl}
-                    width={40}
-                    height={40}
-                    userName={message.senderName}
-                  />
-                  <div className="max-w-md p-3 rounded-lg bg-white text-black">
+                  <div className="max-w-md p-[6px] rounded-lg bg-blue-200 text-black">
                     {renderMessageContent(message)}
                   </div>
                 </div>
-              </div>
-            )}
-            {message.isSelf && (
-              <div className="flex items-center space-x-3">
-                <div className="max-w-md p-[6px] rounded-lg bg-blue-200 text-black">
-                  {renderMessageContent(message)}
-                </div>
-              </div>
-            )}
-          </div>
-        ))}
+              )}
+            </div>
+          );
+        })}
         {/* Thêm một div để đánh dấu phần cuối */}
-        <div ref={bottomRef} />
       </div>
     </div>
   );

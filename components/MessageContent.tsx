@@ -1,6 +1,7 @@
 "use client";
 import React, { useLayoutEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
+import Modal from "react-modal";
 
 interface Conversation {
   groupChatName: string;
@@ -44,6 +45,8 @@ const MessageContent: React.FC<MessageContentProps> = ({
   userInfo,
 }) => {
   const messageList = useRef<HTMLDivElement | null>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useLayoutEffect(() => {
     const scrollToBottom = () => {
@@ -55,6 +58,16 @@ const MessageContent: React.FC<MessageContentProps> = ({
     const timeout = setTimeout(scrollToBottom, 300); // Đặt thời gian chờ bằng 0
     return () => clearTimeout(timeout);
   }, [messages]); // Mỗi khi messages thay đổi, sẽ cuộn đến cuối
+
+  const openImageModal = (imageUrl: string) => {
+    setSelectedImage(imageUrl);
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setSelectedImage(null);
+    setIsModalOpen(false);
+  };
 
   const renderMessageContent = (message: Message) => {
     const messageDate = new Date(message.sentAt);
@@ -104,10 +117,11 @@ const MessageContent: React.FC<MessageContentProps> = ({
               src={message.attachmentUrl}
               alt="Photo"
               className="max-w-xs bg-none"
+              onClick={() => openImageModal(message.attachmentUrl)}
             />
             <span className="p-2 text-xs text-gray-500 mt-1">
               {formattedTime}
-            </span> 
+            </span>
           </div>
         );
       case "chat.video.msg":
@@ -322,6 +336,25 @@ const MessageContent: React.FC<MessageContentProps> = ({
         })}
         {/* Thêm một div để đánh dấu phần cuối */}
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onRequestClose={closeImageModal}
+        className="flex items-center justify-center w-full h-full bg-black bg-opacity-75 relative"
+      >
+        <button
+          onClick={closeImageModal}
+          className="absolute top-4 right-4 text-white text-6xl font-bold"
+        >
+          ×
+        </button>
+        {selectedImage && (
+          <img
+            src={selectedImage}
+            alt="Enlarged"
+            className="max-w-full max-h-full"
+          />
+        )}
+      </Modal>
     </div>
   );
 };

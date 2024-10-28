@@ -1,7 +1,10 @@
 "use client";
-import React, { useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 import Modal from "react-modal";
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:8888");
 
 interface Conversation {
   groupChatName: string;
@@ -47,7 +50,23 @@ const MessageContent: React.FC<MessageContentProps> = ({
   const messageList = useRef<HTMLDivElement | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [updatedUserInfo, setUpdatedUserInfo] = useState(userInfo);
 
+  useEffect(() => {
+    // Listen for avatar change events
+    socket.on("avatarChanged", (newAvatarUrl: string) => {
+      setUpdatedUserInfo((prevInfo) => ({
+        ...prevInfo,
+        groupAvtUrl: newAvatarUrl,
+      }));
+    });
+
+    // Clean up the listener
+    return () => {
+      socket.off("avatarChanged");
+    };
+  }, []);
+  
   useLayoutEffect(() => {
     const scrollToBottom = () => {
       if (messageList.current) {
@@ -58,6 +77,8 @@ const MessageContent: React.FC<MessageContentProps> = ({
     const timeout = setTimeout(scrollToBottom, 300); // Đặt thời gian chờ bằng 0
     return () => clearTimeout(timeout);
   }, [messages]); // Mỗi khi messages thay đổi, sẽ cuộn đến cuối
+
+  
 
   const openImageModal = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -277,13 +298,13 @@ const MessageContent: React.FC<MessageContentProps> = ({
       <div className="relative flex items-center space-x-3 border-b-2 pl-3 pb-3 pt-3">
         <Avatar
           isOnline={false}
-          imageUrl={userInfo.groupAvtUrl}
+          imageUrl={updatedUserInfo.groupAvtUrl}
           width={50}
           height={50}
-          userName={userInfo.groupChatName}
+          userName={updatedUserInfo.groupChatName}
         />
         <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">{userInfo.groupChatName}</h1>
+          <h1 className="text-xl font-semibold">{updatedUserInfo.groupChatName}</h1>
         </div>
       </div>
 
@@ -293,9 +314,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
         ref={messageList}
       >
         {messages.map((message, index) => {
-          if (index === messages.length - 1) {
-            console.log("DONE");
-          }
           return (
             <div
               key={message.groupChatId}
@@ -305,7 +323,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             >
               {!message.isSelf && (
                 <div className="flex flex-col items-start justify-start space-y-1">
-                  {!userInfo.isPrivate && (
+                  {!updatedUserInfo.isPrivate && (
                     <span className="text-xs text-green-600">
                       {message.senderName}
                     </span>

@@ -109,9 +109,26 @@ const MessageControl: React.FC<MessageControlProps> = ({
 
   return (
     <div className="flex-cols border-[1px] border-t-0 h-screen">
+      <div className="flex-cols mt-5 justify-between space-y-10 border-b-[1px] pb-1">
+        <div className="flex-rows w-full gap-3 pr-2 pl-2">
+          <div className="relative w-full">
+            <Image
+              src="/icons/search.svg"
+              width={20}
+              height={20}
+              alt="Search icon"
+              className="absolute top-2 left-2"
+            />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm"
+              className="w-full message-control-input"
+            />
+          </div>
+        </div>
+      </div>
       <div className="flex flex-col w-full overflow-auto scrollbar justify-start">
         {conversations.map((conversation, index) => {
-          
           return (
             <UserCard
               handleOpenMessageBox={() =>

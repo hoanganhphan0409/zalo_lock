@@ -3,7 +3,7 @@ import "@/styles/global.css";
 
 
 export const metadata: Metadata = {
-  title: "Zalo Lock",
+  title: "Zalo Log",
   description: "Zalo logging message",
 };
 

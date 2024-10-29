@@ -112,16 +112,16 @@ body {
 }
 
 .scrollbar {
-  overflow: hidden; /* Ẩn scrollbar */
+  /* overflow: hidden; Ẩn scrollbar */
   overflow-y: scroll; /* Cho phép cuộn theo chiều dọc */
 }
 
 .scrollbar::-webkit-scrollbar {
-  display: none; /* Ẩn scrollbar trên Chrome, Safari, và các trình duyệt dựa trên WebKit */
+  /* display: none; Ẩn scrollbar trên Chrome, Safari, và các trình duyệt dựa trên WebKit */
 }
 
 .scrollbar {
-  -ms-overflow-style: none; /* Ẩn scrollbar trên Internet Explorer và Edge */
+  /* -ms-overflow-style: none; Ẩn scrollbar trên Internet Explorer và Edge */
   scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
 }
 

@@ -3,6 +3,9 @@ import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 import Modal from "react-modal";
 import { io } from "socket.io-client";
+import { Button } from "./ui/button";
+import { PanelRight } from "lucide-react";
+import ImageSidebar from "./MemberSidebar";
 
 const socket = io("http://localhost:8888");
 
@@ -66,7 +69,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
       socket.off("avatarChanged");
     };
   }, []);
-  
+
   useLayoutEffect(() => {
     const scrollToBottom = () => {
       if (messageList.current) {
@@ -77,8 +80,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
     const timeout = setTimeout(scrollToBottom, 300); // Đặt thời gian chờ bằng 0
     return () => clearTimeout(timeout);
   }, [messages]); // Mỗi khi messages thay đổi, sẽ cuộn đến cuối
-
-  
 
   const openImageModal = (imageUrl: string) => {
     setSelectedImage(imageUrl);
@@ -292,87 +293,101 @@ const MessageContent: React.FC<MessageContentProps> = ({
     }
   };
 
+  const [isMinimized, setIsMinimized] = useState(false);
   return (
-    <div className="flex flex-col w-full h-screen">
-      {/* Header - Thông tin người dùng */}
-      <div className="relative flex items-center space-x-3 border-b-2 pl-3 pb-3 pt-3">
-        <Avatar
-          isOnline={false}
-          imageUrl={updatedUserInfo.groupAvtUrl}
-          width={50}
-          height={50}
-          userName={updatedUserInfo.groupChatName}
-        />
-        <div className="flex flex-col">
-          <h1 className="text-xl font-semibold">{updatedUserInfo.groupChatName}</h1>
+    <div className="flex">
+      <div className="flex flex-col w-full h-screen border-r-[1px] ">
+        {/* Header - Thông tin người dùng */}
+        <div className="relative flex items-center justify-between space-x-3 border-b-2 pl-3 pb-3 pt-3">
+          <div className="flex items-center space-x-3">
+            <Avatar
+              isOnline={false}
+              imageUrl={updatedUserInfo.groupAvtUrl}
+              width={50}
+              height={50}
+              userName={updatedUserInfo.groupChatName}
+            />
+            <div className="flex flex-col">
+              <h1 className="text-xl font-semibold">
+                {updatedUserInfo.groupChatName}
+              </h1>
+            </div>
+          </div>
+          <div
+            className="pr-6 pb-3 pt-3 cursor-pointer"
+            onClick={() => setIsMinimized((prev) => !prev)}
+          >
+            <PanelRight className="w-7 h-7" />
+          </div>
         </div>
-      </div>
 
-      {/* Message list */}
-      <div
-        className="flex flex-col bg-gray-100 w-full h-full overflow-y-auto p-3"
-        ref={messageList}
-      >
-        {messages.map((message, index) => {
-          return (
-            <div
-              key={message.groupChatId}
-              className={`flex items-center mb-3 ${
-                message.isSelf ? "justify-end" : "justify-start"
-              }`}
-            >
-              {!message.isSelf && (
-                <div className="flex flex-col items-start justify-start space-y-1">
-                  {!updatedUserInfo.isPrivate && (
-                    <span className="text-xs text-green-600">
-                      {message.senderName}
-                    </span>
-                  )}
-                  <div className="flex items-start space-x-3">
-                    <Avatar
-                      isOnline={false}
-                      imageUrl={message.senderAvtUrl}
-                      width={40}
-                      height={40}
-                      userName={message.senderName}
-                    />
-                    <div className="max-w-md p-[8px] rounded-lg bg-white text-black">
+        {/* Message list */}
+        <div
+          className="flex flex-col bg-gray-100 w-full h-full overflow-y-auto p-3"
+          ref={messageList}
+        >
+          {messages.map((message) => {
+            return (
+              <div
+                key={message.groupChatId}
+                className={`flex items-center mb-3 ${
+                  message.isSelf ? "justify-end" : "justify-start"
+                }`}
+              >
+                {!message.isSelf && (
+                  <div className="flex flex-col items-start justify-start space-y-1">
+                    {!updatedUserInfo.isPrivate && (
+                      <span className="text-xs text-green-600">
+                        {message.senderName}
+                      </span>
+                    )}
+                    <div className="flex items-start space-x-3">
+                      <Avatar
+                        isOnline={false}
+                        imageUrl={message.senderAvtUrl}
+                        width={40}
+                        height={40}
+                        userName={message.senderName}
+                      />
+                      <div className="max-w-md p-[8px] rounded-lg bg-white text-black">
+                        {renderMessageContent(message)}
+                      </div>
+                    </div>
+                  </div>
+                )}
+                {message.isSelf && (
+                  <div className="flex items-center space-x-3">
+                    <div className="max-w-md p-[8px] rounded-lg bg-blue-200 text-black">
                       {renderMessageContent(message)}
                     </div>
                   </div>
-                </div>
-              )}
-              {message.isSelf && (
-                <div className="flex items-center space-x-3">
-                  <div className="max-w-md p-[8px] rounded-lg bg-blue-200 text-black">
-                    {renderMessageContent(message)}
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
-        {/* Thêm một div để đánh dấu phần cuối */}
-      </div>
-      <Modal
-        isOpen={isModalOpen}
-        onRequestClose={closeImageModal}
-        className="flex items-center justify-center w-full h-full bg-black bg-opacity-75 relative"
-      >
-        <button
-          onClick={closeImageModal}
-          className="absolute top-4 right-4 text-white text-6xl font-bold"
+                )}
+              </div>
+            );
+          })}
+          {/* Thêm một div để đánh dấu phần cuối */}
+        </div>
+        <Modal
+          isOpen={isModalOpen}
+          onRequestClose={closeImageModal}
+          className="flex items-center justify-center w-full h-full bg-black bg-opacity-75 relative"
         >
-          ×
-        </button>
-        {selectedImage && (
-          <img
-            src={selectedImage}
-            alt="Enlarged"
-            className="max-w-full max-h-full"
-          />
-        )}
-      </Modal>
+          <button
+            onClick={closeImageModal}
+            className="absolute top-4 right-4 text-white text-6xl font-bold"
+          >
+            ×
+          </button>
+          {selectedImage && (
+            <img
+              src={selectedImage}
+              alt="Enlarged"
+              className="max-w-full max-h-full"
+            />
+          )}
+        </Modal>
+      </div>
+      <ImageSidebar isMinimized={isMinimized} />
     </div>
   );
 };

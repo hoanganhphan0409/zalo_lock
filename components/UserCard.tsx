@@ -26,7 +26,6 @@ const UserCard: React.FC<UserCardProps> = ({
       handleOpenMessageBox(groupChatId);
     }
   };
-  console.log(lastTimeMessage);
   const lastTimeRelative = formatDistanceToNow(new Date(lastTimeMessage), {
     addSuffix: true,
   });

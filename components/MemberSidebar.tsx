@@ -2,7 +2,21 @@ import React, { useState } from "react";
 import { cn } from "@/lib/utils";
 import ImageAround from "./MemberCard";
 import MemberCard from "./MemberCard";
-const ImageSidebar = ({ isMinimized }: { isMinimized: boolean }) => {
+import MemberInfor from "./MessageContent"
+
+interface MemberInfo {
+  name: string;
+  avtUrl: string;
+}
+
+interface ImageSidebarProps {
+  isMinimized: boolean;
+  members?: MemberInfo[];
+}
+
+
+
+const ImageSidebar = ({ isMinimized, members }: ImageSidebarProps) => {
   return (
     <aside
       className={cn(
@@ -18,17 +32,14 @@ const ImageSidebar = ({ isMinimized }: { isMinimized: boolean }) => {
             Member
           </h1>
         </div>
-        <div className="flex flex-col p-2 m-2 space-y-5">
+        <div className="flex flex-col p-2 mt-2 mb-2 ml-2 space-y-5 max-h-screen overflow-auto">
           <span className="text-md font-medium">Member List</span>
           <div className="flex flex-col gap-2 space-y-2">
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
-            <MemberCard />
+            {
+              members?.map((member) => (
+                <MemberCard memberInfor={member} />
+              ))
+            }
           </div>
         </div>
       </div>

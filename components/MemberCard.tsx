@@ -2,18 +2,23 @@ import Image from "next/image";
 import React from "react";
 import Avatar from "./Avatar";
 
-const MemberCard = () => {
+interface MemberInfor {
+  name: string;
+  avtUrl: string;
+}
+
+const MemberCard = ({ memberInfor }: { memberInfor: MemberInfor}) => {
   return (
     <div className="flex flex-row w-full gap-2">
       <Avatar
               isOnline={false}
-              imageUrl='/images/avatarEx.png'
+              imageUrl={memberInfor.avtUrl}
               width={45}
               height={45}
-              userName='Hello'
+              userName={memberInfor.name}
             />
       <div className="flex items-center">
-          <h1 className="text-md font-medium ml-1">Pham Anh Dung</h1>
+          <h1 className="text-md font-medium ml-1">{memberInfor.name}</h1>
       </div>
     </div>
   );

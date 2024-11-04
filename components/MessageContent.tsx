@@ -4,10 +4,15 @@ import Avatar from "@/components/Avatar";
 import Modal from "react-modal";
 import { io } from "socket.io-client";
 import { Button } from "./ui/button";
-import { PanelRight } from "lucide-react";
+import { UsersRound } from "lucide-react";
 import ImageSidebar from "./MemberSidebar";
 
 const socket = io("http://localhost:8888");
+
+interface MemberInfor {
+  name: string;
+  avtUrl: string;
+}
 
 interface Conversation {
   groupChatName: string;
@@ -16,6 +21,7 @@ interface Conversation {
   groupAvtUrl: string;
   groupChatId: string;
   isPrivate: boolean;
+  members?: MemberInfor[];
 }
 
 interface Message {
@@ -53,22 +59,6 @@ const MessageContent: React.FC<MessageContentProps> = ({
   const messageList = useRef<HTMLDivElement | null>();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [updatedUserInfo, setUpdatedUserInfo] = useState(userInfo);
-
-  useEffect(() => {
-    // Listen for avatar change events
-    socket.on("avatarChanged", (newAvatarUrl: string) => {
-      setUpdatedUserInfo((prevInfo) => ({
-        ...prevInfo,
-        groupAvtUrl: newAvatarUrl,
-      }));
-    });
-
-    // Clean up the listener
-    return () => {
-      socket.off("avatarChanged");
-    };
-  }, []);
 
   useLayoutEffect(() => {
     const scrollToBottom = () => {
@@ -302,14 +292,14 @@ const MessageContent: React.FC<MessageContentProps> = ({
           <div className="flex items-center space-x-3">
             <Avatar
               isOnline={false}
-              imageUrl={updatedUserInfo.groupAvtUrl}
+              imageUrl={userInfo.groupAvtUrl}
               width={50}
               height={50}
-              userName={updatedUserInfo.groupChatName}
+              userName={userInfo.groupChatName}
             />
             <div className="flex flex-col">
               <h1 className="text-xl font-semibold">
-                {updatedUserInfo.groupChatName}
+                {userInfo.groupChatName}
               </h1>
             </div>
           </div>
@@ -317,7 +307,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             className="pr-6 pb-3 pt-3 cursor-pointer"
             onClick={() => setIsMinimized((prev) => !prev)}
           >
-            <PanelRight className="w-7 h-7" />
+            {!userInfo.isPrivate && <UsersRound className="w-8 h-8" />}
           </div>
         </div>
 
@@ -336,7 +326,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
               >
                 {!message.isSelf && (
                   <div className="flex flex-col items-start justify-start space-y-1">
-                    {!updatedUserInfo.isPrivate && (
+                    {!userInfo.isPrivate && (
                       <span className="text-xs text-green-600">
                         {message.senderName}
                       </span>
@@ -387,7 +377,10 @@ const MessageContent: React.FC<MessageContentProps> = ({
           )}
         </Modal>
       </div>
-      <ImageSidebar isMinimized={isMinimized} />
+      <ImageSidebar
+        isMinimized={userInfo.isPrivate ? false : isMinimized}
+        members={userInfo.members}
+      />
     </div>
   );
 };

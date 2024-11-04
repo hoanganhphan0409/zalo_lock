@@ -34,7 +34,7 @@ const MessageControl: React.FC<MessageControlProps> = ({
     const fetchUsers = async () => {
       try {
         const response = await fetch("http://localhost:8081/groupChats");
-        const data = await response.json();
+        const data = await response.json();        
         setConversations(data.conversations);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -78,8 +78,16 @@ const MessageControl: React.FC<MessageControlProps> = ({
       }
     });
 
+    socket.on("avatarChanged", async (data) => {
+      await fetchUsers();
+      const conversationAvtChanged = await conversations.find(
+        (conversation) => conversation.groupChatId === data
+      );
+      if (conversationAvtChanged && currentGroupChatId === data) setSelectedUser(conversationAvtChanged);
+    });
     return () => {
       socket.off("newMessage");
+      socket.off("avatarChanged");
     };
   });
   const handleOpenMessageBox = async (
@@ -121,7 +129,7 @@ const MessageControl: React.FC<MessageControlProps> = ({
             />
             <Input
               type="text"
-              placeholder="Tìm kiếm"
+              placeholder="Search"
               className="w-full message-control-input"
             />
           </div>

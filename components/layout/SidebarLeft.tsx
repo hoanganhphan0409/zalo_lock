@@ -1,8 +1,18 @@
-import React from 'react'
+'use client'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Avatar from '@/components/Avatar'
+import { useRouter } from 'next/navigation';
 
 const SidebarLeft = () => {
+  const router = useRouter();
+  const [isSelect, setIsSelect] = useState<'' | 'contact'>('');
+
+  const handleSelectFunc = (type: '' | 'contact') => {
+    setIsSelect(type);
+    router.push(`/${type}`);
+  }
+
   return (
     <div className='flex-cols bg-blue-500 h-screen space-y-10 pt-10'>
       <div className='flex items-center justify-center cursor-pointer hover:scale-110'>
@@ -15,7 +25,10 @@ const SidebarLeft = () => {
         />
       </div>
       <div className='flex-cols w-full space-y-0'>
-        <div className='flex-center sidebar-button'>
+        <div 
+          className={`flex-center sidebar-button cursor-pointer ${isSelect === '' ? 'bg-blue-900 bg-opacity-45' : ''}`}
+          onClick={() => handleSelectFunc('')}
+        >
           <Image
             src='/icons/message.svg'
             width={40}
@@ -24,12 +37,15 @@ const SidebarLeft = () => {
             className=''
           />
         </div>
-        <div className='flex-center sidebar-button'>
+        <div 
+          className={`flex-center sidebar-button cursor-pointer ${isSelect === 'contact' ? 'bg-blue-900 bg-opacity-45' : ''}`}
+          onClick={() => handleSelectFunc('contact')}
+        >
           <Image
             src='/icons/contact.svg'
             width={30}
             height={30}
-            alt='Message button'
+            alt='Contact button'
             className=''
           />
         </div>
@@ -40,14 +56,12 @@ const SidebarLeft = () => {
             src='/icons/settings.svg'
             width={40}
             height={40}
-            alt='Message button'
+            alt='Settings button'
             className=''
           />
         </div>
       </div>
-
     </div>
-
   )
 }
 

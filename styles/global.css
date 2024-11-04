@@ -126,7 +126,7 @@ body {
 }
 
 .sidebar-button {
-  @apply w-full h-[65px] cursor-pointer hover:bg-black text-opacity-55 transition duration-300;
+  @apply w-full h-[65px] cursor-pointer hover:bg-blue-700 hover:bg-opacity-45 text-opacity-55 transition duration-300;
 }
 
 .message-control-button {

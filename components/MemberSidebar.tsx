@@ -33,7 +33,7 @@ const ImageSidebar = ({ isMinimized, members }: ImageSidebarProps) => {
           </h1>
         </div>
         <div className="flex flex-col p-2 mt-2 mb-2 ml-2 space-y-5 max-h-screen overflow-auto">
-          <span className="text-md font-medium">Member List</span>
+          <span className="text-md font-medium">Member List ({members?.length})</span>
           <div className="flex flex-col gap-2 space-y-2">
             {
               members?.map((member) => (

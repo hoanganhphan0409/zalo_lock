@@ -33,7 +33,7 @@ const ContactContent = () => {
 
   return (
     <div className="flex flex-col p-2 mt-2 mb-2 ml-2 space-y-5 max-h-screen overflow-auto">
-      <span className="text-md font-medium">Contact List</span>
+      <span className="text-md font-medium">Friends List</span>
       {loading ? (
         <p>Loading...</p>
       ) : (

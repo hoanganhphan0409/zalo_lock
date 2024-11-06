@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import { UsersRound } from "lucide-react";
 import ImageSidebar from "./MemberSidebar";
 
-const socket = io("http://localhost:8888");
+const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL);
 
 interface MemberInfor {
   name: string;
@@ -26,17 +26,18 @@ interface Conversation {
 
 interface Message {
   groupChatId: number;
-  content?: string;
-  attachmentUrl?: string;
-  cardData?: any;
-  videoData?: any;
+  content: string;
+  attachmentUrl: string;
+  cardData: any;
+  videoData: any;
   isSelf: boolean;
   sentAt: string;
   senderAvtUrl: string;
   senderName: string;
   type: string; // Thêm type để kiểm tra loại tin nhắn
-  fileData?: any;
+  fileData: any;
   locationData: any;
+  isNotification: boolean;
 }
 
 interface MessageContentProps {
@@ -321,10 +322,14 @@ const MessageContent: React.FC<MessageContentProps> = ({
               <div
                 key={message.groupChatId}
                 className={`flex items-center mb-3 ${
-                  message.isSelf ? "justify-end" : "justify-start"
+                  message.isNotification
+                    ? "justify-center"
+                    : message.isSelf
+                    ? "justify-end"
+                    : "justify-start"
                 }`}
               >
-                {!message.isSelf && (
+                {!message.isSelf && !message.isNotification && (
                   <div className="flex flex-col items-start justify-start space-y-1">
                     {!userInfo.isPrivate && (
                       <span className="text-xs text-green-600">
@@ -345,11 +350,16 @@ const MessageContent: React.FC<MessageContentProps> = ({
                     </div>
                   </div>
                 )}
-                {message.isSelf && (
+                {message.isSelf && !message.isNotification && (
                   <div className="flex items-center space-x-3">
                     <div className="max-w-md p-[8px] rounded-lg bg-blue-200 text-black">
                       {renderMessageContent(message)}
                     </div>
+                  </div>
+                )}
+                {message.isNotification && (
+                  <div className="text-center text-gray-500 my-2 bg-gray-200 p-2 rounded-full">
+                    <span>{message.content}</span>
                   </div>
                 )}
               </div>

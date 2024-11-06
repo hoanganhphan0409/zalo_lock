@@ -7,7 +7,7 @@ import UserCard from "@/components/UserCard";
 import { formatDistanceToNow } from "date-fns";
 import { io } from "socket.io-client";
 
-const socket = io("http://localhost:8888");
+const socket = io(`${process.env.NEXT_PUBLIC_API_BASE_URL}`);
 
 // Khai báo kiểu dữ liệu cho người dùng
 interface Conversation {
@@ -33,8 +33,10 @@ const MessageControl: React.FC<MessageControlProps> = ({
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8888/groupChats");
-        const data = await response.json();        
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/groupChats`
+        );
+        const data = await response.json();
         setConversations(data.conversations);
       } catch (error) {
         console.error("Failed to fetch users:", error);
@@ -48,7 +50,7 @@ const MessageControl: React.FC<MessageControlProps> = ({
     const fetchMessages = async (groupId: string) => {
       try {
         const response = await fetch(
-          `http://localhost:8888/messages/${groupId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/messages/${groupId}`
         );
         if (!response.ok) {
           throw new Error("Không thể lấy tin nhắn");
@@ -62,7 +64,9 @@ const MessageControl: React.FC<MessageControlProps> = ({
 
     const fetchUsers = async () => {
       try {
-        const response = await fetch("http://localhost:8888/groupChats");
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/groupChats`
+        );
         const data = await response.json();
         setConversations(data.conversations);
       } catch (error) {
@@ -83,7 +87,8 @@ const MessageControl: React.FC<MessageControlProps> = ({
       const conversationAvtChanged = await conversations.find(
         (conversation) => conversation.groupChatId === data
       );
-      if (conversationAvtChanged && currentGroupChatId === data) setSelectedUser(conversationAvtChanged);
+      if (conversationAvtChanged && currentGroupChatId === data)
+        setSelectedUser(conversationAvtChanged);
     });
     return () => {
       socket.off("newMessage");
@@ -98,7 +103,7 @@ const MessageControl: React.FC<MessageControlProps> = ({
     const fetchMessageBox = async (groupId: string) => {
       try {
         const response = await fetch(
-          `http://localhost:8888/messages/${groupId}`
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/messages/${groupId}`
         );
         if (!response.ok) {
           throw new Error("Không thể lấy tin nhắn");

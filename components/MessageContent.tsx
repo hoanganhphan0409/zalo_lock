@@ -2,12 +2,8 @@
 import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Avatar from "@/components/Avatar";
 import Modal from "react-modal";
-import { io } from "socket.io-client";
-import { Button } from "./ui/button";
-import { UsersRound } from "lucide-react";
+import { PanelRight } from "lucide-react";
 import ImageSidebar from "./MemberSidebar";
-
-const socket = io(process.env.NEXT_PUBLIC_API_BASE_URL);
 
 interface MemberInfor {
   name: string;
@@ -308,7 +304,7 @@ const MessageContent: React.FC<MessageContentProps> = ({
             className="pr-6 pb-3 pt-3 cursor-pointer"
             onClick={() => setIsMinimized((prev) => !prev)}
           >
-            {!userInfo.isPrivate && <UsersRound className="w-8 h-8" />}
+            {!userInfo.isPrivate && <PanelRight className="w-8 h-8" />}
           </div>
         </div>
 

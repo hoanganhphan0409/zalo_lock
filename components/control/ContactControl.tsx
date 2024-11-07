@@ -1,18 +1,33 @@
 "use client";
-
 import { ContactRound, Group } from "lucide-react";
 
-const ContactControl = () => {
+interface ContactControlProps {
+  activeTab: string;
+  setActiveTab: (tab: string) => void;
+  isLoading: boolean;
+}
+
+const ContactControl = ({ activeTab, setActiveTab }: ContactControlProps) => {
   return (
-    <div className="flex flex-cols border-[1px] border-t-0 h-screen ">
-      <div className="flex flex-row items-center gap-2 w-full p-3 bg-white hover:bg-blue-200">
+    <div className="flex flex-col border-[1px] border-t-0 h-screen">
+      <button
+        className={`flex items-center gap-2 w-full p-3 ${
+          activeTab === "friends" ? "bg-blue-400" : "bg-white hover:bg-blue-200"
+        } `}
+        onClick={() => setActiveTab("friends")}
+      >
         <ContactRound className="ml-2 w-8 h-8" />
-        <h1 className="text-lg font-medium ml-1 ">List friends</h1>
-      </div>
-      <div className="flex flex-row items-center gap-2 w-full p-3 bg-white hover:bg-blue-200">
+        <h1 className="text-lg font-medium ml-1">List friends</h1>
+      </button>
+      <button
+        className={`flex items-center gap-2 w-full p-3 ${
+          activeTab === "groups" ? "bg-blue-400" : "bg-white hover:bg-blue-200"
+        } `}
+        onClick={() => setActiveTab("groups")}
+      >
         <Group className="ml-2 w-8 h-8" />
-        <h1 className="text-lg font-medium ml-1 ">List groups</h1>
-      </div>
+        <h1 className="text-lg font-medium ml-1">List groups</h1>
+      </button>
     </div>
   );
 };

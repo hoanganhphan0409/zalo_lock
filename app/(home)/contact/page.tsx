@@ -6,17 +6,9 @@ import ContactContent from "@/components/ContactContent";
 const ContactPage = () => {
   const [activeTab, setActiveTab] = useState("friends");
   const [isLoading, setIsLoading] = useState(false); 
-  const [isLocked, setIsLocked] = useState(false);  
-
   const handleTabChange = (tab: string) => {
-    if (isLocked || activeTab === tab) return;
-
-    setIsLocked(true); 
+    if (activeTab === tab) return;
     setActiveTab(tab);
-
-    setTimeout(() => {
-      setIsLocked(false);
-    }, 1000);
   };
 
   return (

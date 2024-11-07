@@ -4,7 +4,6 @@ import { ContactRound, Group } from "lucide-react";
 interface ContactControlProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
-  isLoading: boolean;
 }
 
 const ContactControl = ({ activeTab, setActiveTab }: ContactControlProps) => {

@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import MemberCard from "./MemberCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import DetailPopup from "./PopupDetail";
-
 interface MemberInfor {
   zaloName: string;
   avatar: string;
@@ -11,7 +10,12 @@ interface MemberInfor {
   gender?: number;
   sdob?: string;
   phoneNumber?: string;
- // id?: string;
+  id: string;
+}
+
+interface MemberGroupInfor {
+  name: string;
+  avtUrl: string;
 }
 
 interface ContactContentProps {
@@ -24,6 +28,7 @@ const ContactContent = ({ activeTab, setLoading }: ContactContentProps) => {
   const [selectedMember, setSelectedMember] = useState<MemberInfor | null>(
     null
   );
+  const [groupMember, setGroupMembers] = useState<MemberGroupInfor[]>([]);
   useEffect(() => {
     const fetchMembers = async () => {
       setMembers([]);
@@ -46,6 +51,23 @@ const ContactContent = ({ activeTab, setLoading }: ContactContentProps) => {
 
     fetchMembers();
   }, [activeTab, setLoading]);
+
+  useEffect(() => {
+    const fetchGroupMember = async () => {
+      if (selectedMember && activeTab !== "friends") {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_BASE_URL}/groups/${selectedMember.id}`
+        );
+        if (!response.ok) throw new Error(`Failed to fetch `);
+        const data = await response.json();
+        setGroupMembers(data);
+      } else {
+        setGroupMembers([]);
+      }
+    };
+  
+    fetchGroupMember();
+  }, [selectedMember, activeTab]);
 
   return (
     <div className="flex flex-col p-2 mt-2 mb-2 ml-2 space-y-5 max-h-screen overflow-auto">
@@ -71,6 +93,8 @@ const ContactContent = ({ activeTab, setLoading }: ContactContentProps) => {
               <DetailPopup
                 member={selectedMember}
                 onClose={() => setSelectedMember(null)}
+                isGroup={activeTab !== "friends"}
+                membersGroupInfor={groupMember}
               />
             )}
           </div>

@@ -2,10 +2,16 @@
 import { useState, useEffect } from "react";
 import MemberCard from "./MemberCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import DetailPopup from "./PopupDetail";
 
 interface MemberInfor {
   zaloName: string;
   avatar: string;
+  cover?: string;
+  gender?: number;
+  sdob?: string;
+  phoneNumber?: string;
+ // id?: string;
 }
 
 interface ContactContentProps {
@@ -15,7 +21,9 @@ interface ContactContentProps {
 
 const ContactContent = ({ activeTab, setLoading }: ContactContentProps) => {
   const [members, setMembers] = useState<MemberInfor[]>([]);
-
+  const [selectedMember, setSelectedMember] = useState<MemberInfor | null>(
+    null
+  );
   useEffect(() => {
     const fetchMembers = async () => {
       setMembers([]);
@@ -52,9 +60,19 @@ const ContactContent = ({ activeTab, setLoading }: ContactContentProps) => {
             {members.map((member) => (
               <MemberCard
                 key={member.zaloName}
-                memberInfor={{ name: member.zaloName, avtUrl: member.avatar }}
+                memberInfor={{
+                  name: member.zaloName,
+                  avtUrl: member.avatar,
+                  onClick: () => setSelectedMember(member),
+                }}
               />
             ))}
+            {selectedMember && (
+              <DetailPopup
+                member={selectedMember}
+                onClose={() => setSelectedMember(null)}
+              />
+            )}
           </div>
         </ScrollArea>
       )}

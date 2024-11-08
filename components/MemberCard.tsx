@@ -5,11 +5,15 @@ import Avatar from "./Avatar";
 interface MemberInfor {
   name: string;
   avtUrl: string;
+  onClick?: () => void;
 }
 
 const MemberCard = ({ memberInfor }: { memberInfor: MemberInfor }) => {
   return (
-    <div className="flex flex-row w-full gap-2 hover:bg-gray-200 p-2">
+    <div
+      className="flex flex-row w-full gap-2 hover:bg-gray-200 p-2"
+      onClick={memberInfor.onClick}
+    >
       <Avatar
         isOnline={false}
         imageUrl={memberInfor.avtUrl}
